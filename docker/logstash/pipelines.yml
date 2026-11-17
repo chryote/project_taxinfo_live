@@ -1,0 +1,2 @@
+- pipeline.id: tax_pipeline
+  path.config: "/usr/share/logstash/pipeline/logstash.conf"

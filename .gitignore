@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Docker data volumes (if mounted locally)
+.docker-data/
+postgres-data/
+elasticsearch-data/
+rabbitmq-data/
+
+# OS Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# K6 output
+k6-summary.json
+k6-results.html

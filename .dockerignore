@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.git
+.gitignore
+.env
+*.log
+.docker-data
+k6-summary.json
+coverage
