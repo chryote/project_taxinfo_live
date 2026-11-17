@@ -17,6 +17,7 @@ export async function apiRoutes(fastify: FastifyInstance) {
   fastify.get('/tax/calculate/:plate', TaxController.calculateByPlate);
   fastify.post('/tax/simulate', TaxController.simulate);
   fastify.post('/tax/pay', TaxController.pay);
+  fastify.post('/tax/reset', TaxController.resetStatus);
 
   // Vehicles & pgvector Similarity
   fastify.get('/vehicles/:plate', VehicleController.getByPlate);

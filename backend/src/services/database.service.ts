@@ -288,6 +288,24 @@ export class DatabaseService {
   }
 
   /**
+   * Reset vehicle payment status back to unpaid (MENUNGGU_PEMBAYARAN) for demo testing
+   */
+  public static async resetDemoStatus(plate?: string): Promise<void> {
+    if (plate && plate.trim().length > 0) {
+      await this.updateVehicleStatus(plate, 'MENUNGGU_PEMBAYARAN');
+      return;
+    }
+    this.seedInMemoryVehicles();
+    if (this.isConnected && this.pool) {
+      try {
+        await this.pool.query(`UPDATE vehicles SET status = 'MENUNGGU_PEMBAYARAN' WHERE status = 'LUNAS'`);
+      } catch (err) {
+        console.error('Postgres error resetting demo vehicle status:', err);
+      }
+    }
+  }
+
+  /**
    * Seed realistic in-memory vehicles with embeddings for zero-friction local tests
    */
   private static seedInMemoryVehicles(): void {

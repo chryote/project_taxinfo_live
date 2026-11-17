@@ -93,6 +93,15 @@ export class ApiService {
     return body.data;
   }
 
+  public static async resetVehicleStatus(plateNumber?: string): Promise<void> {
+    const res = await fetch(`${BASE_URL}/tax/reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plateNumber }),
+    });
+    if (!res.ok) throw new Error('Failed to reset vehicle status');
+  }
+
   public static async getAnalyticsSummary(): Promise<{
     totalAssessments: number;
     totalPayments: number;

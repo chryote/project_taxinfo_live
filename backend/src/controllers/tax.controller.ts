@@ -1,6 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { TaxService } from '../services/tax.service.js';
+import { DatabaseService } from '../services/database.service.js';
+import { ElasticsearchService } from '../services/elasticsearch.service.js';
 
 export class TaxController {
   public static async calculateByPlate(
@@ -93,6 +95,26 @@ export class TaxController {
       success: true,
       message: 'Payment job successfully queued to RabbitMQ for asynchronous settlement',
       data: transaction,
+    });
+  }
+
+  public static async resetStatus(
+    req: FastifyRequest<{ Body?: { plateNumber?: string } }>,
+    reply: FastifyReply
+  ) {
+    const plateNumber = req.body?.plateNumber;
+    await DatabaseService.resetDemoStatus(plateNumber);
+    await ElasticsearchService.indexAuditLog({
+      eventType: 'TAX_STATUS_RESET_DEMO',
+      entityId: plateNumber || 'ALL_VEHICLES',
+      payload: { plateNumber: plateNumber || 'ALL', status: 'MENUNGGU_PEMBAYARAN' },
+      timestamp: new Date().toISOString(),
+      durationMs: 1,
+    });
+
+    return reply.status(200).send({
+      success: true,
+      message: 'Status tagihan berhasil di-reset ke MENUNGGU_PEMBAYARAN untuk simulasi ulang',
     });
   }
 }

@@ -155,7 +155,7 @@
           </table>
         </div>
 
-        <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; flex-wrap: wrap;">
           <button
             v-if="vehicle.status !== 'LUNAS'"
             class="btn btn-eco"
@@ -164,9 +164,20 @@
           >
             Bayar PKB Sekarang (Simulasi RabbitMQ)
           </button>
-          <div v-else style="display: flex; align-items: center; color: var(--success); font-weight: 700; gap: 0.5rem;">
-            <span>Pajak Sudah Terbayar Lunas</span>
-          </div>
+          <template v-else>
+            <div style="display: flex; align-items: center; color: var(--success); font-weight: 700; gap: 0.5rem;">
+              <span>✓ Pajak Sudah Terbayar Lunas</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="padding: 0.55rem 1rem; font-size: 0.85rem; border-color: var(--primary); color: var(--primary);"
+              :disabled="resetting"
+              @click="handleResetStatus"
+            >
+              {{ resetting ? 'Mereset...' : '↻ Reset Status Tagihan (Demo)' }}
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -185,6 +196,7 @@ const emit = defineEmits<{
 const plateInput = ref('B 1234 ABC');
 const isFiveYear = ref(false);
 const loading = ref(false);
+const resetting = ref(false);
 const hasSearched = ref(false);
 const error = ref<string | null>(null);
 
@@ -202,6 +214,23 @@ const samplePlates = [
 function selectSample(plate: string) {
   plateInput.value = plate;
   handleSearch();
+}
+
+async function handleResetStatus() {
+  if (!vehicle.value) return;
+  resetting.value = true;
+  try {
+    await ApiService.resetVehicleStatus(vehicle.value.plateNumber);
+    await handleSearch();
+  } catch {
+    // Immediate client fallback if backend endpoint is still redeploying
+    vehicle.value.status = 'MENUNGGU_PEMBAYARAN';
+  } finally {
+    if (vehicle.value) {
+      vehicle.value.status = 'MENUNGGU_PEMBAYARAN';
+    }
+    resetting.value = false;
+  }
 }
 
 async function handleSearch() {
